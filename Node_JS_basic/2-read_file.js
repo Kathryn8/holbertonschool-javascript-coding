@@ -1,54 +1,43 @@
 const fs = require('fs');
 
-module.exports = function countStudents(fileName) {
-  let data;
-
-  // Try-catch block to read file or throw error
+function countStudents(path) {
   try {
-    data = fs.readFileSync(fileName)
-      .toString() // convert Buffer to string
-      .split('\n') // split string to lines
-      .map((e) => e.trim()) // remove white spaces for each line
-      .map((e) => e.split(',').map((e) => e.trim())); // split each line to array
-  } catch (err) {
+    // Read the database file synchronously
+    const data = fs.readFileSync(path, 'utf8');
+
+    // Split the file into lines and filter out empty lines
+    const lines = data.split('\n').filter((line) => line.trim() !== '');
+
+    // Initialize an object to store the count of students in each field
+    const studentCounts = {};
+
+    // Initialize variables to store the total number of students and a list of students in each field
+    let totalStudents = 0;
+
+    // Process each line (skipping the header)
+    for (let i = 1; i < lines.length; i++) {
+      const fields = lines[i].split(',');
+      const field = fields[3].trim();
+
+      if (!studentCounts[field]) {
+        studentCounts[field] = [];
+      }
+
+      studentCounts[field].push(fields[0]);
+      totalStudents += 1;
+    }
+
+    // Log the total number of students
+    console.log(`Number of students: ${totalStudents}`);
+
+    // Log the number of students in each field and the list of first names
+    Object.keys(studentCounts).forEach((field) => {
+      const students = studentCounts[field];
+      console.log(`Number of students in ${field}: ${students.length}. List: ${students.join(', ')}`);
+    });
+  } catch (error) {
     throw new Error('Cannot load the database');
   }
+}
 
-  // Remove header line:
-  if (data[0][0] === 'firstname') {
-    data.shift();
-  }
-
-  // Output number of students:
-  console.log(`Number of students: ${data.length}`);
-
-  // Get a list of FIELDS:
-  const fieldList = [];
-  for (const student of data) {
-    fieldList.push(student[3]);
-  }
-
-  // Make the list of fields distinct:
-  function onlyUnique(value, index, array) {
-    return array.indexOf(value) === index;
-  }
-  const uniqueFieldList = fieldList.filter(onlyUnique);
-
-  // create a MAP object with distrinct fields as keys
-  const fieldMap = new Map();
-  uniqueFieldList.forEach((elem) => {
-    fieldMap.set(elem, []);
-  });
-
-  // iterate over studentList and assign each student to field:
-  for (const student of data) {
-    for (const field of fieldMap.keys()) {
-      if (student[3] === field) {
-        (fieldMap.get(field)).push(student[0]);
-      }
-    }
-  }
-  fieldMap.forEach((firstNameList, field) => {
-    console.log(`Number of students in ${field}: ${firstNameList.length}. List: ${String(firstNameList).replace(/,/gi, ', ')}`);
-  });
-};
+module.exports = countStudents;
