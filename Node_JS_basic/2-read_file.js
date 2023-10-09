@@ -11,7 +11,7 @@ function countStudents(path) {
     // Initialize an object to store the count of students in each field
     const studentCounts = {};
 
-    // Initialize variables to store the total number of students and a 
+    // Initialize variables to store the total number of students and a
     // list of students in each field
     let totalStudents = 0;
 
