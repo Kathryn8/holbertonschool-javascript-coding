@@ -61,7 +61,6 @@ async function countStudents(filePath, callback) {
 
     callback(null, result);
   } catch (err) {
-    console.error('Error reading student data:', err);
     callback(err);
   }
 }
@@ -78,7 +77,8 @@ function handleStudentRequest(request, response) {
 
   countStudents(filePath, (error, result) => {
     if (error) {
-      sendResponse(response, 'Error reading student data', 500); // Internal Server Error
+      sendResponse(response, `This is the list of our students
+Cannot load the database`, 500); // Internal Server Error
     } else {
       // Create the plain text response
       const plainTextResponse = `This is the list of our students
