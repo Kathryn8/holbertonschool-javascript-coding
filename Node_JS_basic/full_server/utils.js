@@ -1,6 +1,6 @@
 const { readFile } = require('fs').promises;
 
-async function readDatabase(filePath) {
+async function readDatabase(path) {
   try {
     const data = await readFile(path, 'utf-8');
     const lines = data.split('\n').filter((line) => line.trim() !== '');
